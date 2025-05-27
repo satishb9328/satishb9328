@@ -1,0 +1,674 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load dict_extras %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="10">
+    <!-- Other head elements here -->
+</head>
+<style>
+/* Prevent table overflow and keep separation */
+.table-responsive {
+    margin-bottom: 2rem;
+}
+.analysis-table th, .analysis-table td {
+    text-align: center;
+    vertical-align: middle;
+}
+.card {
+    margin-bottom: 1.5rem;
+}
+.chart-container {
+    width: 100% !important;
+    min-height: 210px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+@media (min-width: 992px) {
+    .main-table-col {
+        max-width: 66.6667%;
+        flex: 0 0 66.6667%;
+    }
+    .side-col {
+        max-width: 33.3333%;
+        flex: 0 0 33.3333%;
+    }
+}
+</style>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left: Main Option Chain Table -->
+        <div class="col-lg-8 col-12 main-table-col">
+            <div class="table-responsive">
+                <table id="table" class="table table-bordered table-sm" style="font-size: 0.92em;">
+                    <thead>
+                        <tr style="color: #21cf58; background-color: #333;">
+                        <!-- ... your <th> blocks here ... -->
+                        <!-- (copy your original <th> content) -->
+                        <th style="color: rgb(250, 8, 8); border: 1px solid grey;">CDIR</th>
+                        <th style="color: rgb(255, 255, 255); border: 1px solid grey;">YOI%</th>
+                        <th style="color: rgb(250, 8, 8); border: 1px solid grey;">OI%</th>
+                        <th style="color: rgb(250, 8, 8); border: 1px solid grey;">OI</th>
+                        <th style="color: rgb(250, 8, 8); border: 1px solid grey;">COI</th>
+                        <th style="color: rgb(250, 8, 8); border: 1px solid grey;">VOL</th>
+                        <th style="color: rgb(250, 8, 8); border: 1px solid grey;">VOL%</th>
+                        <th style="color: rgb(250, 8, 8); border: 1px solid grey;">IV</th>
+                        <th style="color: rgb(250, 8, 8); border: 1px solid grey;">LTP</th>
+                        <th style="color: rgb(250, 8, 8); border: 1px solid grey;">CHNG</th>
+                        <th style="color: rgb(250, 8, 8); border: 1px solid grey;">COIP</th>
+                        <th style="border: 1px solid rgb(245, 243, 108);">STKPR</th>
+                        <th style="color: rgb(14, 231, 14); border: 1px solid grey;">POIP</th>
+                        <th style="color: rgb(14, 231, 14); border: 1px solid grey;">CHNG</th>
+                        <th style="color: rgb(14, 231, 14); border: 1px solid grey;">LTP</th>
+                        <th style="color: rgb(14, 231, 14); border: 1px solid grey;">IV</th>
+                        <th style="color: rgb(14, 231, 14); border: 1px solid grey;">VOL%</th>
+                        <th style="color: rgb(14, 231, 14); border: 1px solid grey;">VOL</th>
+                        <th style="color: rgb(14, 231, 14); border: 1px solid grey;">POI</th>
+                        <th style="color: rgb(14, 231, 14); border: 1px solid grey;">OI</th>
+                        <th style="color: rgb(14, 231, 14); border: 1px solid grey;">OI%</th>
+                        <th style="color: rgb(255, 255, 255); border:1px solid grey;">YOI%</th>
+                        <th style="color: rgb(14, 231, 14); border: 1px solid grey;">PDIR</th>
+                        <th style="color: rgb(213, 231, 14); border: 1px solid grey;">PDIF</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for VAL in result %}
+                        <tr>
+                                    {% if VAL.strikePrice == middle %}
+                                        <td colspan="23.2" style="border: none; background-color: rgb(157, 155, 155); color: black; height: fit-content; width: fit-content; padding: 0;">{{currentMarketPrice}}</td>
+                                    {% endif %}
+                                    </tr>                        
+                                                
+                                {% if VAL.CDIR_COLOR == 'yellow' %}
+                                    {% if VAL.CEDTOP == 1 %}
+                                    <td class="purple_text yellow">{{VAL.CDIR}}</td>
+                                    {% elif VAL.CEDTOP == 2 %}
+                                    <td class="orange_text yellow">{{VAL.CDIR}}</td>
+                                    {%else%}
+                                    <td class="yellow">{{VAL.CDIR}}</td>
+                                    {%endif%}
+                                {%elif VAL.CDIR_COLOR == 'green'%}
+                                    {% if VAL.CEDTOP == 1 %}
+                                    <td class="purple_text green">{{VAL.CDIR}}</td>
+                                    {% elif VAL.CEDTOP == 2 %}
+                                    <td class="orange_text green">{{VAL.CDIR}}</td>
+                                    {%else%}
+                                    <td class="green">{{VAL.CDIR}}</td>
+                                    {%endif%}
+                                {%elif VAL.CDIR_COLOR == 'blue'%}
+                                    {% if VAL.CEDTOP == 1 %}
+                                    <td class="yellow_text blue">{{VAL.CDIR}}</td>
+                                    {% elif VAL.CEDTOP == 2 %}
+                                    <td class="yellow_text blue">{{VAL.CDIR}}</td>
+                                    {%else%}
+                                    <td class="blue">{{VAL.CDIR}}</td>
+                                    {%endif%}
+                                {%elif VAL.CDIR_COLOR == 'red'%}
+                                    {% if VAL.CEDTOP == 1 %}
+                                    <td class="purple_text red">{{VAL.CDIR}}</td>
+                                    {% elif VAL.CEDTOP == 2 %}
+                                    <td class="orange_text red">{{VAL.CDIR}}</td>
+                                    {%else%}
+                                    <td class="red">{{VAL.CDIR}}</td>
+                                    {%endif%}
+                                {%else%}
+                                    {% if VAL.CEDTOP == 1 %}
+                                    <td class="purple_text">{{VAL.CDIR}}</td>
+                                    {% elif VAL.CEDTOP == 2 %}
+                                    <td class="orange_text">{{VAL.CDIR}}</td>
+                                    {%else%}
+                                    <td>{{VAL.CDIR}}</td>
+                                    {%endif%}
+                                {%endif%}
+                
+                                {% if VAL.ce_oipd >= 80 %}
+                                    <td style="background-color: rgb(159, 157, 156); color: rgb(0, 0, 0);">{{VAL.ce_oipd}}</td>
+                                {% elif VAL.ce_oipd >= 50 and VAL.ce_oipd < 54.99 %}
+                                    <td style="background-color: rgb(41, 171, 135); color: white;">{{VAL.ce_oipd}}</td>
+                                {% elif VAL.ce_oipd >= 55 and VAL.ce_oipd < 59.99 %}
+                                    <td style="background-color: rgba(9, 208, 222); color: white;">{{VAL.ce_oipd}}</td>
+                                {% elif VAL.ce_oipd >= 60 and VAL.ce_oipd < 64.99 %}
+                                    <td style="background-color: rgb(212, 95, 175); color: white;">{{VAL.ce_oipd}}</td>
+                                {% elif VAL.ce_oipd >= 65 and VAL.ce_oipd < 69.99 %}
+                                    <td style="background-color: rgb(57, 255, 20); color: black;">{{VAL.ce_oipd}}</td>
+                                {% elif VAL.ce_oipd >= 70 and VAL.ce_oipd < 74.99 %}
+                                    <td style="background-color: rgb(0, 75, 73); color: white;">{{VAL.ce_oipd}}</td>
+                                {% elif VAL.ce_oipd >= 75 and VAL.ce_oipd < 79.99 %}
+                                    <td style="background-color: rgb(246, 246, 7); color: black;">{{VAL.ce_oipd}}</td>
+                                {% else %}
+                                    <td>{{VAL.ce_oipd}}</td>
+                                {% endif %}
+                
+                                {% if VAL.CE_OIP >= 80 %}
+                                    <td class="red">{{VAL.CE_OIP}}</td>
+                                {% elif VAL.CE_OIP >= 50 and VAL.CE_OIP < 54.99 %}
+                                    <td style="background-color: rgb(41, 171, 135); color: white;">{{VAL.CE_OIP}}</td>
+                                {% elif VAL.CE_OIP >= 55 and VAL.CE_OIP < 59.99 %}
+                                    <td style="background-color: rgb(9, 208, 222); color: black;">{{VAL.CE_OIP}}</td>
+                                {% elif VAL.CE_OIP >= 60 and VAL.CE_OIP < 64.99 %}
+                                    <td style="background-color: rgb(213, 105, 179); color: white;">{{VAL.CE_OIP}}</td>
+                                {% elif VAL.CE_OIP >= 65 and VAL.CE_OIP < 69.99 %}
+                                    <td style="background-color: rgb(57, 255, 20); color: black;">{{VAL.CE_OIP}}</td>
+                                {% elif VAL.CE_OIP >= 70 and VAL.CE_OIP < 74.99 %}
+                                    <td style="background-color: rgb(0, 75, 73); color: white;">{{VAL.CE_OIP}}</td>
+                                {% elif VAL.CE_OIP >= 75 and VAL.CE_OIP < 79.99 %}
+                                    <td style="background-color: rgb(255, 253, 1); color: black;">{{VAL.CE_OIP}}</td>
+                                {% else %}
+                                    <td>{{VAL.CE_OIP}}</td>
+                                {% endif %}
+                
+                                {% if VAL.CE_OI_COLOR == 1 %}
+                                    <td style="background-color: rgb(8, 8, 236);">{{VAL.CE_OI}}</td>
+                                {% elif VAL.CE_OI_COLOR == 2 %}
+                                    <td class="green">{{VAL.CE_OI}}</td>
+                                {% elif VAL.CE_OI_COLOR == 3 %}
+                                    <td class="red">{{VAL.CE_OI}}</td>
+                                {% else %}
+                                    <td>{{VAL.CE_OI}}</td>
+                                {% endif %}                             
+                                
+                                {% if VAL.CE_COI_COLOR == 1 %}
+                                    {% if VAL.MAX_COI == 1 %}
+                                        <td style="background-color: rgb(8, 8, 247);" class="blink">{{VAL.CE_COI}}</td>
+                                    {% else %}
+                                        <td style="background-color: rgb(6, 6, 236);">{{VAL.CE_COI}}</td>
+                                    {% endif %}
+                                {% elif VAL.CE_COI_COLOR == 2 %}
+                                    <td class="green">{{VAL.CE_COI}}</td>
+                                {% elif VAL.CE_COI_COLOR == 3 %}
+                                    <td class="red">{{VAL.CE_COI}}</td>
+                                {% else %}
+                                    {% if VAL.CE_COI < 0 %}
+                                        <td style="color: rgb(0, 0, 0);">{{VAL.CE_COI}}</td>
+                                    {% else %}
+                                        <td>{{VAL.CE_COI}}</td>
+                                    {% endif %}
+                                {% endif %}
+                
+                                {% if VAL.CE_MAX_VOL == 1 %}
+                                    <td style="background-color: rgb(11, 37, 234);">{{VAL.CE_vol}}</td>
+                                {% elif VAL.CE_vol == 0 %}
+                                    <td></td>
+                                {% else %}
+                                    <td>{{VAL.CE_vol}}</td>
+                                {% endif %}
+                
+                                {% if VAL.CE_volp == 0 %}
+                                    <td style="color: #000000;">{{VAL.CE_volp}}</td>
+                                {% elif VAL.CE_volp > VAL.PE_volp %}
+                                    <td style="color: #21cf58;">{{VAL.CE_volp}}</td>
+                                {% elif VAL.CE_volp < VAL.PE_volp %}
+                                    <td style="color: #eb0d0d;">{{VAL.CE_volp}}</td>
+                                {% else %}
+                                    <td>{{VAL.CE_volp}}</td>
+                                {% endif %}
+                
+                                {% if VAL.CE_IV >= 10 and VAL.CE_IV < 16 %}
+                                    <td style="color: rgb(216, 227, 19);">{{VAL.CE_IV}}</td>
+                                {% elif VAL.CE_IV >= 16 and VAL.CE_IV < 20 %}
+                                    <td style="color: rgb(111, 235, 111);">{{VAL.CE_IV}}</td>
+                                {% elif VAL.CE_IV >= 20 and VAL.CE_IV < 25 %}
+                                    <td style="color: rgb(122, 172, 248);">{{VAL.CE_IV}}</td>
+                                {% else %}
+                                    <td style="color: rgb(255, 170, 0);">{{VAL.CE_IV}}</td>
+                                {% endif %}
+                
+                                <td>{{VAL.CE_LTP}}</td>
+                
+                                {% if VAL.CE_chng < 0 %}
+                                    <td style="color: rgb(245, 12, 12);">{{VAL.CE_chng}}</td>
+                                {% else %}
+                                    <td>{{VAL.CE_chng}}</td>
+                                {% endif %}
+                
+                                {% if VAL.CE_COIP >= 80 %}
+                                    <td class="red">{{VAL.CE_COIP}}</td>
+                                {% elif VAL.CE_COIP >= 50 and VAL.CE_COIP < 54.99 %}
+                                    <td style="background-color: rgb(41, 171, 135); color: white;">{{VAL.CE_COIP}}</td>
+                                {% elif VAL.CE_COIP >= 55 and VAL.CE_COIP < 59.99 %}
+                                    <td style="background-color: rgb(9, 208, 222); color: black;">{{VAL.CE_COIP}}</td>
+                                {% elif VAL.CE_COIP >= 60 and VAL.CE_COIP < 64.99 %}
+                                    <td style="background-color: rgb(213, 105, 179); color: white;">{{VAL.CE_COIP}}</td>
+                                {% elif VAL.CE_COIP >= 65 and VAL.CE_COIP < 69.99 %}
+                                    <td style="background-color: rgb(57, 255, 20); color: black;">{{VAL.CE_COIP}}</td>
+                                {% elif VAL.CE_COIP >= 70 and VAL.CE_COIP < 74.99 %}
+                                    <td style="background-color: rgb(0, 75, 73); color: white;">{{VAL.CE_COIP}}</td>
+                                {% elif VAL.CE_COIP >= 75 and VAL.CE_COIP < 79.99 %}
+                                    <td style="background-color: rgb(255, 253, 1); color: black;">{{VAL.CE_COIP}}</td>
+                                {% else %}
+                                    <td>{{VAL.CE_COIP}}</td>
+                                {% endif %}
+                             
+                                {% if VAL.strikePrice == max_ce or VAL.strikePrice == min_pe %}
+                                    <td style="background-color: white; color: black;">{{VAL.strikePrice}}</td>
+                                {% else %}
+                                    {% if optionType == 'NIFTY' %}
+                                        <td style="background-color: rgb(213, 42, 213);">{{VAL.strikePrice}}</td>
+                                    {% elif optionType == 'BANKNIFTY' %}
+                                        <td style="background-color: rgb(108, 108, 245);">{{VAL.strikePrice}}</td>
+                                    {% else %}
+                                        <td style="background-color: green;">{{VAL.strikePrice}}</td>
+                                    {% endif %}
+                                {% endif %}
+                
+                                {% if VAL.PE_COIP >= 80 %}
+                                    <td class="red">{{VAL.PE_COIP}}</td>
+                                {% elif VAL.PE_COIP >= 50 and VAL.PE_COIP < 54.99 %}
+                                    <td style="background-color: rgb(41, 171, 135); color: white;">{{VAL.PE_COIP}}</td>
+                                {% elif VAL.PE_COIP >= 55 and VAL.PE_COIP < 59.99 %}
+                                    <td style="background-color: rgba(9, 208, 222); color: white;">{{VAL.PE_COIP}}</td>
+                                {% elif VAL.PE_COIP >= 60 and VAL.PE_COIP < 64.99 %}
+                                    <td style="background-color: rgb(212, 95, 175); color: white;">{{VAL.PE_COIP}}</td>
+                                {% elif VAL.PE_COIP >= 65 and VAL.PE_COIP < 69.99 %}
+                                    <td style="background-color: rgb(57, 255, 20); color: black;">{{VAL.PE_COIP}}</td>
+                                {% elif VAL.PE_COIP >= 70 and VAL.PE_COIP < 74.99 %}
+                                    <td style="background-color: rgb(0, 75, 73); color: white;">{{VAL.PE_COIP}}</td>
+                                {% elif VAL.PE_COIP >= 75 and VAL.PE_COIP < 79.99 %}
+                                    <td style="background-color: rgb(246, 246, 7); color: black;">{{VAL.PE_COIP}}</td>
+                                {% else %}
+                                    <td>{{VAL.PE_COIP}}</td>
+                                {% endif %}
+                
+                                {% if VAL.PE_chng < 0 %}
+                                    <td style="color: red;">{{VAL.PE_chng}}</td>
+                                {% else %}
+                                    <td>{{VAL.PE_chng}}</td>
+                                {% endif %}
+                                <td>{{VAL.PE_LTP}}</td>
+                
+                                {% if VAL.PE_IV >= 10 and VAL.PE_IV < 16 %}
+                                    <td style="color: yellow;">{{VAL.PE_IV}}</td>
+                                {% elif VAL.PE_IV >= 16 and VAL.PE_IV < 20 %}
+                                    <td style="color: rgb(111, 235, 111);">{{VAL.PE_IV}}</td>
+                                {% elif VAL.PE_IV >= 20 and VAL.PE_IV < 25 %}
+                                    <td style="color: rgb(122, 172, 248);">{{VAL.PE_IV}}</td>
+                                {% else %}
+                                    <td style="color: rgb(255, 170, 0);">{{VAL.PE_IV}}</td>
+                                {% endif %}
+                
+                                {% if VAL.PE_volp == 0 %}
+                                    <td style="color: #000000;">{{VAL.PE_volp}}</td>
+                                {% elif VAL.PE_volp > VAL.CE_volp %}
+                                    <td style="color: #21cf58;">{{VAL.PE_volp}}</td>
+                                {% elif VAL.PE_volp < VAL.CE_volp %}
+                                    <td style="color: #eb0d0d;">{{VAL.PE_volp}}</td>
+                                {% else %}
+                                    <td>{{VAL.PE_volp}}</td>
+                                {% endif %}
+                
+                                {% if VAL.PE_MAX_VOL == 1 %}
+                                    <td style="background-color: rgb(3, 3, 247);">{{VAL.PE_vol}}</td>
+                                {% elif VAL.PE_vol == 0 %}
+                                    <td></td>
+                                {% else %}
+                                    <td>{{VAL.PE_vol}}</td>
+                                {% endif %}
+                
+                                {% if VAL.PE_COI_COLOR == 1 %}
+                                    {% if VAL.MAX_POI == 1 %}
+                                        <td style="background-color: rgb(9, 9, 247);" class="blink">{{VAL.PE_COI}}</td>
+                                    {% else %}
+                                        <td style="background-color: rgb(6, 6, 240);">{{VAL.PE_COI}}</td>
+                                    {% endif %}
+                                {% elif VAL.PE_COI_COLOR == 2 %}
+                                    <td class="green">{{VAL.PE_COI}}</td>
+                                {% elif VAL.PE_COI_COLOR == 3 %}
+                                    <td class="red">{{VAL.PE_COI}}</td>
+                                {% else %}
+                                    {% if VAL.PE_COI < 0 %}
+                                        <td style="color: rgb(0, 0, 0);">{{VAL.PE_COI}}</td>
+                                    {% else %}
+                                        <td>{{VAL.PE_COI}}</td>
+                                    {% endif %}
+                                {% endif %}
+                
+                                {% if VAL.PE_OI_COLOR == 1 %}
+                                    <td style="background-color: rgb(6, 6, 240);">{{VAL.PE_OI}}</td>
+                                {% elif VAL.PE_OI_COLOR == 2 %}
+                                    <td class="green">{{VAL.PE_OI}}</td>
+                                {% elif VAL.PE_OI_COLOR == 3 %}
+                                    <td class="red">{{VAL.PE_OI}}</td>
+                                {% else %}
+                                    <td>{{VAL.PE_OI}}</td>
+                                {% endif %}
+                
+                                {% if VAL.PE_OIP >= 80 %}
+                                    <td class="red">{{VAL.PE_OIP}}</td>
+                                {% elif VAL.PE_OIP >= 50 and VAL.PE_OIP < 54.99 %}
+                                    <td style="background-color: rgb(41, 171, 135); color: white;">{{VAL.PE_OIP}}</td>
+                                {% elif VAL.PE_OIP >= 55 and VAL.PE_OIP < 59.99 %}
+                                    <td style="background-color: rgba(9, 208, 222); color: white;">{{VAL.PE_OIP}}</td>
+                                {% elif VAL.PE_OIP >= 60 and VAL.PE_OIP < 64.99 %}
+                                    <td style="background-color: rgb(212, 95, 175); color: white;">{{VAL.PE_OIP}}</td>
+                                {% elif VAL.PE_OIP >= 65 and VAL.PE_OIP < 69.99 %}
+                                    <td style="background-color: rgb(57, 255, 20); color: black;">{{VAL.PE_OIP}}</td>
+                                {% elif VAL.PE_OIP >= 70 and VAL.PE_OIP < 74.99 %}
+                                    <td style="background-color: rgb(0, 75, 73); color: white;">{{VAL.PE_OIP}}</td>
+                                {% elif VAL.PE_OIP >= 75 and VAL.PE_OIP < 79.99 %}
+                                    <td style="background-color: rgb(246, 246, 7); color: black;">{{VAL.PE_OIP}}</td>
+                                {% else %}
+                                    <td>{{VAL.CE_COIP}}</td>
+                                {% endif %}
+                
+                                {% if VAL.pe_oipd >= 80 %}
+                                    <td style="background-color: rgb(159, 157, 156); color: rgb(0, 0, 0);">{{ VAL.pe_oipd }}</td>
+                                {% elif VAL.pe_oipd >= 50 and VAL.pe_oipd < 54.99 %}
+                                    <td style="background-color: rgb(41, 171, 135); color: white;">{{ VAL.pe_oipd }}</td>
+                                {% elif VAL.pe_oipd >= 55 and VAL.pe_oipd < 59.99 %}
+                                    <td style="background-color: rgb(9, 208, 222); color: black;">{{ VAL.pe_oipd }}</td>
+                                {% elif VAL.pe_oipd >= 60 and VAL.pe_oipd < 64.99 %}
+                                    <td style="background-color: rgb(213, 105, 179); color: white;">{{ VAL.pe_oipd }}</td>
+                                {% elif VAL.pe_oipd >= 65 and VAL.pe_oipd < 69.99 %}
+                                    <td style="background-color: rgb(57, 255, 20); color: black;">{{ VAL.pe_oipd }}</td>
+                                {% elif VAL.pe_oipd >= 70 and VAL.pe_oipd < 74.99 %}
+                                    <td style="background-color: rgb(0, 75, 73); color: white;">{{ VAL.pe_oipd }}</td>
+                                {% elif VAL.pe_oipd >= 75 and VAL.pe_oipd < 79.99 %}
+                                    <td style="background-color: rgb(255, 253, 1); color: black;">{{ VAL.pe_oipd }}</td>
+                                {% else %}
+                                    <td>{{ VAL.pe_oipd }}</td>
+                                {% endif %}
+                
+                                {% if VAL.PDIR >= 0.1 and VAL.PDIR < 0.2 %}
+                                    <td style="color: rgb(10, 9, 9); background-color: rgb(192, 0, 250); font-size: small;">{{ VAL.PDIR }}</td>
+                                {% elif VAL.PDIR >= 0.21 and VAL.PDIR < 0.49 %}
+                                    <td style="color: rgb(10, 9, 9); background-color: rgb(75, 218, 204); font-size: small;">{{ VAL.PDIR }}</td>
+                                {% elif VAL.PDIR >= 0.51 and VAL.PDIR < 0.80 %}
+                                    <td style="color: rgb(10, 9, 9); background-color: rgb(121, 226, 100); font-size: small;">{{ VAL.PDIR }}</td>
+                                {% elif VAL.PDIR >= 0.81 and VAL.PDIR < 1.10 %}
+                                    <td style="color: rgb(10, 9, 9); background-color: rgb(244, 232, 13); font-size: small;">{{ VAL.PDIR }}</td>
+                                {% elif VAL.PDIR >= 1.01 and VAL.PDIR < 1.50 %}
+                                    <td style="color: rgb(10, 9, 9); background-color: rgb(34, 152, 225); font-size: small;">{{ VAL.PDIR }}</td>
+                                {% elif VAL.PDIR >= 1.51 and VAL.PDIR < 2.00 %}
+                                    <td style="color: rgb(10, 9, 9); background-color: rgb(232, 66, 16); font-size: small;">{{ VAL.PDIR }}</td>
+                                {% elif VAL.PDIR >= 2.00 %}
+                                    <td style="color: rgb(242, 236, 236); background-color: rgb(3, 1, 0);">{{ VAL.PDIR }}</td>
+                                {% else %}
+                                    <td>{{ VAL.PDIR }}</td>
+                                {% endif %}
+                
+                                {% if VAL.PDIF >= 0.1 and VAL.PDIF < 0.2 %}
+                                    <td style="color: rgb(10, 9, 9); background-color: rgb(192, 0, 250); font-size: small;">{{ VAL.PDIF }}</td>
+                                {% elif VAL.PDIF >= 0.21 and VAL.PDIF < 0.49 %}
+                                    <td style="color: rgb(10, 9, 9); background-color: rgb(75, 218, 204); font-size: small;">{{ VAL.PDIF }}</td>
+                                {% elif VAL.PDIF >= 0.51 and VAL.PDIF < 0.80 %}
+                                    <td style="color: rgb(10, 9, 9); background-color: rgb(121, 226, 100); font-size: small;">{{ VAL.PDIF }}</td>
+                                {% elif VAL.PDIF >= 0.81 and VAL.PDIF < 1.10 %}
+                                    <td style="color: rgb(10, 9, 9); background-color: rgb(244, 232, 13); font-size: small;">{{ VAL.PDIF }}</td>
+                                {% elif VAL.PDIF >= 1.01 and VAL.PDIF < 1.50 %}
+                                    <td style="color: rgb(10, 9, 9); background-color: rgb(34, 152, 225); font-size: small;">{{ VAL.PDIF }}</td>
+                                {% elif VAL.PDIF >= 1.51 and VAL.PDIF < 2.00 %}
+                                    <td style="color: rgb(10, 9, 9); background-color: rgb(232, 66, 16); font-size: small;">{{ VAL.PDIF }}</td>
+                                {% elif VAL.PDIF >= 2.00 %}
+                                    <td style="color: rgb(255, 255, 255); background-color: rgb(28, 25, 25);">{{ VAL.PDIF }}</td>
+                                {% else %}
+                                    <td>{{ VAL.PDIF }}</td>
+                                {% endif %}
+                                </tr>
+                        <!-- copy your original <tr> and <td> logic here -->
+                        <!-- ... -->
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Right column: Analysis, Chart, Premarket -->
+        <div class="col-lg-4 col-12 side-col">
+            <!-- Analysis Table -->
+            <div class="mb-4">
+                <table class="analysis-table table table-bordered" style="width: 100%; table-layout: fixed; font-size: 0.8em;color: white;">
+                    <tr>
+                        <th class="table-header" style="padding: 4px;">MAX PAIN</th>
+                        {% for strikePrice in maxPainOI %}
+                            <td class="{% if strikePrice.strikePrice > currentMarketPrice %}resistance{% else %}support{% endif %}" style="word-wrap: break-word; padding: 4px;">
+                                {{ strikePrice.strikePrice }}<br>
+                                <small style="font-size: 0.9em;">{% if strikePrice.strikePrice > currentMarketPrice %}R{% else %}S{% endif %}</small>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <th class="table-header" style="padding: 4px;">VALUES</th>
+                        {% for strikePrice in maxPainOI %}
+                            <td class="{% if forloop.first %}highlight-max{% elif forloop.last %}highlight-min{% else %}neutral{% endif %}" style="word-wrap: break-word; padding: 4px;">
+                                {{ strikePrice.value }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <th class="table-header" style="padding: 4px;">PCR</th>
+                        {% for p in PCR %}
+                            <td style="word-wrap: break-word; padding: 4px;">{{ p.e }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <th class="table-header" style="padding: 4px;">Ratio</th>
+                        {% for p in PCR %}
+                            <td style="word-wrap: break-word; padding: 4px;">{{ p.pcr|floatformat:2 }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <th class="table-header" style="padding: 4px;">PCR Ratio</th>
+                        {% for p in PCR %}
+                            <td style="word-wrap: break-word; padding: 4px;">
+                                <span class="pcr-label {% if p.pcr <= 0.50 %}bearish{% elif p.pcr <= 0.9 %}oversold{% elif p.pcr <= 1 %}neutral{% elif p.pcr <= 1.5 %}bullish{% elif p.pcr <= 1.9 %}overbought{% else %}extreme{% endif %}" style="font-size: 0.7em;">
+                                    {% if p.pcr <= 0.5 %}Ex Bearish{% elif p.pcr <= 0.9 %}Oversold{% elif p.pcr <= 1 %}Neutral{% elif p.pcr <= 1.5 %}Bullish{% elif p.pcr <= 1.9 %}Overbought{% else %}Ex Bullish{% endif %}
+                                </span>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                </table>
+            </div>
+            <!-- Chart below analysis table -->
+            <!-- Chart Card -->
+<div class="card shadow mb-4" style="background: linear-gradient(135deg, #232526 0%, #0f2027 100%); border-radius: 16px;">
+    <div class="card-body" style="background: transparent; border-radius: 16px;">
+        <div class="chart-container" style="height:230px; min-height: 210px; width:100%; display:flex; align-items:center; justify-content:center;">
+            <canvas id="myChart" style="width:100% !important; height:210px !important; display:block; background: transparent;"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Premarket Data Card -->
+<div class="card shadow" style="background: linear-gradient(135deg, #232526 0%, #000000 100%); border-radius: 16px;">
+    <div class="card-header bg-dark text-white" style="border-radius: 16px 16px 0 0;">
+        <h5 class="mb-0" style="letter-spacing: 1px; font-weight:bold;color: #21cf58; align-content: center;">Pre-Market Data (Last 7 Days)</h5>
+    </div>
+    <div class="card-body" style="background: transparent; border-radius: 0 0 16px 16px; padding: 0.75rem 0.5rem 0.5rem 0.5rem;">
+        <div class="table-responsive" style="max-height: 180px; overflow-y: auto; margin-bottom: 0;">
+            <table class="table table-bordered table-hover mb-0" style="background:rgba(50,50,50,0.65); color:#fff; border-radius:12px; overflow:hidden; table-layout: fixed; width: 100%;">
+                <thead style="background:rgba(30,30,30,0.95);">
+                    <tr>
+                        <th scope="col" style="border-color: #444; text-align:center; width: 22%;">Date</th>
+                        <th scope="col" style="border-color: #444; text-align:center; width: 19%;">Open</th>
+                        <th scope="col" style="border-color: #444; text-align:center; width: 19%;">High</th>
+                        <th scope="col" style="border-color: #444; text-align:center; width: 19%;">Low</th>
+                        <th scope="col" style="border-color: #444; text-align:center; width: 19%;">Close</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in premarket_7days %}
+                    <tr>
+                        <td style="border-color: #444; text-align:center;">{{ data.store_date|date:"d-m-Y" }}</td>
+                        <td style="border-color: #444; text-align:center; {% if data.N_Open|match_market:current_market_price %}background: linear-gradient(90deg, #28a745 60%, #222 100%); color:#fff; font-weight:bold;{% endif %}">{{ data.N_Open }}</td>
+                        <td style="border-color: #444; text-align:center; {% if data.N_High|match_market:current_market_price %}background: linear-gradient(90deg, #28a745 60%, #222 100%); color:#fff; font-weight:bold;{% endif %}">{{ data.N_High }}</td>
+                        <td style="border-color: #444; text-align:center; {% if data.N_Low|match_market:current_market_price %}background: linear-gradient(90deg, #28a745 60%, #222 100%); color:#fff; font-weight:bold;{% endif %}">{{ data.N_Low }}</td>
+                        <td style="border-color: #444; text-align:center; {% if data.N_Close|match_market:current_market_price %}background: linear-gradient(90deg, #28a745 60%, #222 100%); color:#fff; font-weight:bold;{% endif %}">{{ data.N_Close }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center" style="background:#222; color:#fff; border:none;">No premarket data available</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+    <!-- OICOI Chart full row below -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body" style="background-color: white;">
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="OICOI" style="max-width: 100%; height: 400px; background-color: white;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ oits|json_script:"oits-data" }}
+{{ coits|json_script:"coits-data" }}
+{{ labels|json_script:"labels-data" }}
+{{ data1|json_script:"data1-data" }}
+{{ data2|json_script:"data2-data" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script>
+    // myChart
+    const ctx0 = document.getElementById('myChart');
+    let dataa = [0, 0];
+    try {
+        const oitsElem = document.getElementById('oits-data');
+        const coitsElem = document.getElementById('coits-data');
+        if (oitsElem && coitsElem) {
+            const oits = JSON.parse(oitsElem.textContent);
+            const coits = JSON.parse(coitsElem.textContent);
+            dataa = [oits, coits];
+        } else {
+            console.warn('oits-data or coits-data script tag missing');
+        }
+    } catch (e) {
+        console.warn('OI/COI Strength data missing or invalid:', e);
+    }
+    const labels = ['OI Strength', 'COI Strength'];
+    if (ctx0) {
+        const ctx = ctx0.getContext('2d');
+        const greenGradient = ctx.createLinearGradient(0, 0, ctx0.width, 0);
+        greenGradient.addColorStop(0, 'lightgreen');
+        greenGradient.addColorStop(1, 'green');
+        const redGradient = ctx.createLinearGradient(0, 0, ctx0.width, 0);
+        redGradient.addColorStop(0, 'lightcoral');
+        redGradient.addColorStop(1, 'red');
+        const backgroundcolora = dataa.map(val => (val >= 0 ? greenGradient : redGradient));
+        const currentValue = dataa[0];
+        new Chart(ctx0, {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Strength',
+                    data: dataa,
+                    backgroundColor: backgroundcolora,
+                    borderWidth: 1,
+                    barPercentage: 0.4,
+                    borderRadius: 30
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    datalabels: {
+                        color: function(context) {
+                            const value = context.dataset.data[context.dataIndex];
+                            if (value - currentValue >= 50000) { return 'lime'; }
+                            else if (value - currentValue <= -50000) { return 'red'; }
+                            else { return 'white'; }
+                        },
+                        font: { weight: 'bold', size: 14 },
+                        anchor: 'center',
+                        align: 'center',
+                        formatter: function(value) {
+                            return Math.round(value * 100) / 100;
+                        }
+                    }
+                },
+                layout: { padding: { top: 20, bottom: 20, left: 20, right: 20 } },
+                scales: {
+                    x: { beginAtZero: true, ticks: { color: 'yellow' }, grid: { color: 'rgba(255,255,255,0.2)' }},
+                    y: { beginAtZero: true, ticks: { color: 'white' }, grid: { drawOnChartArea: true, color: 'rgba(255,255,255,0.2)' }}
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+    } else {
+        console.warn('myChart canvas not found.');
+    }
+
+    // OICOI
+    const ctx1 = document.getElementById('OICOI');
+    if (ctx1) {
+        const oicoiLabelsElem = document.getElementById('labels-data');
+        const oicoiData1Elem = document.getElementById('data1-data');
+        const oicoiData2Elem = document.getElementById('data2-data');
+        let oicoiLabels = [];
+        let oicoiData1 = [];
+        let oicoiData2 = [];
+        try {
+            if (oicoiLabelsElem && oicoiData1Elem && oicoiData2Elem) {
+                oicoiLabels = JSON.parse(oicoiLabelsElem.textContent);
+                oicoiData1 = JSON.parse(oicoiData1Elem.textContent);
+                oicoiData2 = JSON.parse(oicoiData2Elem.textContent);
+            }
+        } catch (e) {
+            console.warn('OICOI chart data missing or invalid:', e);
+        }
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: oicoiLabels,
+                datasets: [
+                    {
+                        label: 'COI ATM',
+                        data: oicoiData1,
+                        borderWidth: 1,
+                        barPercentage: 0.4,
+                        borderRadius: 30,
+                        backgroundColor: 'red'
+                    },
+                    {
+                        label: 'POI ATM',
+                        data: oicoiData2,
+                        borderWidth: 1,
+                        barPercentage: 0.4,
+                        borderRadius: 30,
+                        backgroundColor: 'green'
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    x: {
+                        stacked: false,
+                        ticks: {
+                            color: ['red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'black', 'green', 'green', 'green', 'green', 'green', 'green', 'green', 'green']
+                        }
+                    },
+                    y: {
+                        stacked: false,
+                        beginAtZero: true,
+                        ticks: { color: ['black'] },
+                        grid: { drawOnChartArea: true }
+                    }
+                },
+                indexAxis: 'x',
+                responsive: true,
+                plugins: {
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top'
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+    } else {
+        console.warn('OICOI canvas not found.');
+    }
+</script>
+{% endblock %}
